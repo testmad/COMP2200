@@ -219,87 +219,90 @@ class MyFrameClass extends JFrame implements ActionListener, DocumentListener
 		if(e.getActionCommand().equals(radio1String))
 		{
 			fromUnit = INCHES;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio2String))
 		{
 			fromUnit = FEET;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio3String))
 		{
 			fromUnit = YARDS;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio4String))
 		{
 			fromUnit = MILES;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio5String))
 		{
 			fromUnit = MILLIMETERS;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio6String))
 		{
 			fromUnit = CENTIMETERS;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio7String))
 		{
 			fromUnit = METERS;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio8String))
 		{
 			fromUnit = KILOMETERS;
-			System.out.println(fromUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio9String))
 		{
 			toUnit = INCHES;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio10String))
 		{
 			toUnit = FEET;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio11String))
 		{
 			toUnit = YARDS;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio12String))
 		{
 			toUnit = MILES;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio13String))
 		{
 			toUnit = MILLIMETERS;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio14String))
 		{
 			toUnit = CENTIMETERS;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio15String))
 		{
 			toUnit = METERS;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else if(e.getActionCommand().equals(radio16String))
 		{
 			toUnit = KILOMETERS;
-			System.out.println(toUnit);
+			convertedInput(inputField.getText());
 		}
 		else
 		{
 			
 		}
+		
+		
+		
 	}
 
 	@Override
@@ -311,18 +314,12 @@ class MyFrameClass extends JFrame implements ActionListener, DocumentListener
 	@Override
 	public void insertUpdate(DocumentEvent e)
 	{
-		String string = inputField.getText();
+		
 		
 		try
 		{
-			if(string.equals(""))
-				outputField.setText("");
-			else
-			{
-				double d = Double.parseDouble(string.trim());
+			convertedInput(inputField.getText().trim());
 			
-				outputField.setText("" + String.format("%.8f", convertedInput(d)));
-			}
 		}
 		catch(NumberFormatException nfe)
 		{
@@ -333,18 +330,12 @@ class MyFrameClass extends JFrame implements ActionListener, DocumentListener
 	@Override
 	public void removeUpdate(DocumentEvent e)
 	{
-		String string = inputField.getText();
+		
 		
 		try
 		{
-			if(string.equals(""))
-				outputField.setText("");
-			else
-			{
-				double d = Double.parseDouble(string.trim());
+			convertedInput(inputField.getText().trim());
 			
-				outputField.setText("" + String.format("%.8f", convertedInput(d)));
-			}
 		}
 		catch(NumberFormatException nfe)
 		{
@@ -352,12 +343,23 @@ class MyFrameClass extends JFrame implements ActionListener, DocumentListener
 		}
 	}
 	
-	public double convertedInput(double val)
+	public void convertedInput(String string)
 	{
-		double converted;
+		if(string.equals(""))
+			outputField.setText("");
+		else
+		{
+			double d = Double.parseDouble(string.trim());
 		
-		converted = (val / fromUnit) * toUnit;
+			outputField.setText("" + String.format("%.8f", (d / fromUnit) * toUnit));
+		}
 		
-		return converted;
+		
+//		
+//		double converted;
+//		
+//		converted = (val / fromUnit) * toUnit;
+//		
+//		return converted;32
 	}
 }
