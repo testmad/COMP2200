@@ -1,26 +1,13 @@
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.ScrollPane;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
+// David Walker
+// Comp2200
+// Project 2
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
 
 public class GUI_List_Manipulation
 {
@@ -30,83 +17,103 @@ public class GUI_List_Manipulation
 	}
 }
 
-class MyFrameClass extends JFrame implements ActionListener
+class MyFrameClass extends JFrame implements ActionListener, ListSelectionListener
 {
-	JList myListBox;
-	DefaultListModel myListModel;
+	JList<String> myListBox;
+	DefaultListModel<String> myListModel;
 	JScrollPane sp;
 	JFileChooser fileChooser;
+	JButton btnDelete;
+	String fileName;
 	
 	MyFrameClass()
 	{
-		myListModel = new DefaultListModel();
-		myListBox = new JList(myListModel);
+		myListModel = new DefaultListModel<String>();
+		myListBox = new JList<String>(myListModel);
 		sp = new JScrollPane(myListBox);
+		sp.setBorder(BorderFactory.createCompoundBorder(new EmptyBorder(10,10,10,5), new LineBorder(Color.darkGray)));
 		
 		Container cp;
-		
-		JPanel pnlList;
+
 		JPanel pnlButton;
 		
 		JButton btnLoad;
 		JButton btnSave;
 		JButton btnSaveAs;
 		JButton btnAdd;
-		JButton btnDelete;
+		
 		JButton btnExit;
 		
-		pnlList = new JPanel();
-		pnlList.add(sp);
+		myListBox.addListSelectionListener(this);
 		
 		btnLoad = new JButton("Load");
+		btnLoad.setMinimumSize(new Dimension(100,25));
+		btnLoad.setMaximumSize(new Dimension(100,25));
 		btnLoad.setToolTipText("Load file.");
 		btnLoad.setActionCommand("LOAD");
 		btnLoad.addActionListener(this);
 		
 		btnSave = new JButton("Save");
+		btnSave.setMinimumSize(new Dimension(100,25));
+		btnSave.setMaximumSize(new Dimension(100,25));
 		btnSave.setToolTipText("Save file.");
 		btnSave.setActionCommand("SAVE");
 		btnSave.addActionListener(this);
 		
 		btnSaveAs = new JButton("Save As");
+		btnSaveAs.setMinimumSize(new Dimension(100,25));
+		btnSaveAs.setMaximumSize(new Dimension(100,25));
 		btnSaveAs.setToolTipText("Save file as...");
 		btnSaveAs.setActionCommand("SAVEAS");
 		btnSaveAs.addActionListener(this);
 		
 		btnAdd = new JButton("Add");
+		btnAdd.setMinimumSize(new Dimension(100,25));
+		btnAdd.setMaximumSize(new Dimension(100,25));
 		btnAdd.setToolTipText("Add an item.");
 		btnAdd.setActionCommand("NEW");
 		btnAdd.addActionListener(this);
 		
 		btnDelete = new JButton("Delete");
+		btnDelete.setMinimumSize(new Dimension(100,25));
+		btnDelete.setMaximumSize(new Dimension(100,25));
 		btnDelete.setToolTipText("Delete selected item(s).");
 		btnDelete.setActionCommand("DELETE");
 		btnDelete.addActionListener(this);
+		btnDelete.setEnabled(false);
 		
 		btnExit = new JButton("Exit");
+		btnExit.setMinimumSize(new Dimension(100,25));
+		btnExit.setMaximumSize(new Dimension(100,25));
 		btnExit.setActionCommand("EXIT");
 		btnExit.addActionListener(this);
 		
-		pnlButton = new JPanel(new GridLayout(0,1));
+		pnlButton = new JPanel();
+		pnlButton.setLayout(new BoxLayout(pnlButton,BoxLayout.Y_AXIS));
+		pnlButton.setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
+		
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnLoad);
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnSave);
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnSaveAs);
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnAdd);
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnDelete);
+		pnlButton.add(Box.createRigidArea(new Dimension(10, 10)));
 		pnlButton.add(btnExit);
 		
 		cp = getContentPane();
-		cp.add(pnlList, BorderLayout.WEST);
+		cp.add(sp, BorderLayout.CENTER);
 		cp.add(pnlButton, BorderLayout.EAST);
 		
 		setJMenuBar(newMenuBar());
-		
-		
+
 		fileChooser = new JFileChooser();
-		//fileChooser.showOpenDialog(this);
-		//fileChooser.showSaveDialog(this);
-		//fileChooser.showDialog(this, "Save as...");
-		
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
 		setupMainFrame();
 	}
 
@@ -129,14 +136,15 @@ class MyFrameClass extends JFrame implements ActionListener
 		subMenu = new JMenu("Item");
 		subMenu.setMnemonic(KeyEvent.VK_I);
 		subMenu.add(newItem("New...", "NEW", this, KeyEvent.VK_N, KeyEvent.VK_N, "Add new item.", 0));
-		subMenu.add(newItem("Delete...", "DELETE", this, KeyEvent.VK_D, KeyEvent.VK_D, "Delete current item.", 0));
-		subMenu.add(newItem("Delete all...", "DELETEALL", this, KeyEvent.VK_D, KeyEvent.VK_D, "Delete all.", 3));
+		subMenu.add(newItem("Delete...", "DELETE", this, KeyEvent.VK_D, KeyEvent.VK_D, "Delete current item.", 0)).setEnabled(false);
+		subMenu.add(newItem("Delete all...", "DELETEALL", this, KeyEvent.VK_D, KeyEvent.VK_D, "Delete all.", 3)).setEnabled(false);;
 		
 		menuBar.add(subMenu);
 		
 		return menuBar;
 	}
 	
+	//Added a type arg so that I could have different key masks based on a given int.
 	private JMenuItem newItem(String label,
 							  String actionCommand,
 							  ActionListener menuListener, 
@@ -174,6 +182,9 @@ class MyFrameClass extends JFrame implements ActionListener
 		tk = Toolkit.getDefaultToolkit();
 		d = tk.getScreenSize();
 		//setSize(d.width/2, d.height/2);
+		
+		setMinimumSize(new Dimension(500, 282));
+		
 		pack();
 		setLocation(d.width/4, d.height/4);
 		
@@ -183,68 +194,222 @@ class MyFrameClass extends JFrame implements ActionListener
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
+	public void actionPerformed(ActionEvent event)
 	{
-		if(e.getActionCommand().equals("LOAD"))
+		if(event.getActionCommand().equals("LOAD"))
 		{
 			int response = fileChooser.showOpenDialog(this);
 			if( response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = fileChooser.getSelectedFile();
-				
-				System.out.println("Opening: " + file.getName() + ".");
+				try
+				{
+					File file = fileChooser.getSelectedFile();
+					fileName = file.getAbsolutePath();
+					BufferedReader br = new BufferedReader(new FileReader(file));
+					String str = null;
+					
+					while ((str = br.readLine()) != null)
+					{
+						if(str.trim().length() > 0)
+							myListModel.addElement(str);
+					}
+					
+					br.close();
+					myListModel.trimToSize();
+				}
+				catch(Exception e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			else
 			{
 				System.out.println("Cancelled by user.");
 			}
 		}
-		else if(e.getActionCommand().equals("SAVE"))
+
+		else if(event.getActionCommand().equals("SAVE"))
 		{
-			int response = fileChooser.showSaveDialog(this);
-			if( response == JFileChooser.APPROVE_OPTION)
+			if(fileName == null)
 			{
-				File file = fileChooser.getSelectedFile();
-				
-				System.out.println("Opening: " + file.getName() + ".");
+				int response = fileChooser.showSaveDialog(this);
+				if( response == JFileChooser.APPROVE_OPTION)
+				{
+					try
+					{
+						File file = fileChooser.getSelectedFile();
+						fileName = file.getAbsolutePath();
+						BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+						
+						//This took too long for me to figure out.  I feel dumb for not getting it sooner.
+						for(int i = 0; i < myListModel.getSize(); i++) {
+			                String str = (String)myListModel.getElementAt(i);
+			                bw.write(str, 0, str.length());
+			                bw.newLine();
+			            }
+			            bw.close();
+					}
+					catch(Exception e)
+					{
+						JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				else
+				{
+					System.out.println("Cancelled by user.");
+				}
 			}
 			else
 			{
-				System.out.println("Cancelled by user.");
+				try
+				{
+					File file = new File(fileName);
+					BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+					
+					//This took too long for me to figure out.  I feel dumb for not getting it sooner.
+					for(int i = 0; i < myListModel.getSize(); i++) {
+		                String str = (String)myListModel.getElementAt(i);
+		                bw.write(str, 0, str.length());
+		                bw.newLine();
+		            }
+		            bw.close();
+				}
+				catch(Exception e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
 			}
+			
 		}
-		else if(e.getActionCommand().equals("SAVEAS"))
+
+		else if(event.getActionCommand().equals("SAVEAS"))
 		{
 			int response = fileChooser.showDialog(this, "Save as...");
 			if( response == JFileChooser.APPROVE_OPTION)
 			{
-				File file = fileChooser.getSelectedFile();
-				
-				System.out.println("Opening: " + file.getName() + ".");
+				try
+				{
+					File file = fileChooser.getSelectedFile();
+					fileName = file.getAbsolutePath();
+					BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+					
+					//This took too long for me to figure out.  I feel dumb for not getting it sooner.
+					for(int i = 0; i < myListModel.getSize(); i++) {
+		                String str = (String)myListModel.getElementAt(i);
+		                bw.write(str, 0, str.length());
+		                bw.newLine();
+		            }
+		            bw.close();
+				}
+				catch(Exception e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			else
 			{
 				System.out.println("Cancelled by user.");
 			}
 		}
-		else if(e.getActionCommand().equals("NEW"))
+
+		else if(event.getActionCommand().equals("NEW"))
 		{
 			String str = JOptionPane.showInputDialog("Enter string...");
-			System.out.println("String: " + str);
+			if(str != null)
+			{
+				if(str.trim().length() > 0)
+				{
+					myListModel.addElement(str);
+					myListModel.trimToSize();
+				}
+				else
+					JOptionPane.showMessageDialog(null, "Input invalid.", "Error!", JOptionPane.ERROR_MESSAGE);
+			}
+			else
+			{
+				
+			}
 		}
-		else if(e.getActionCommand().equals("DELETE"))
+
+		else if(event.getActionCommand().equals("DELETE"))
 		{
-			System.out.println("Delete Item.");
+			if(myListBox.getSelectedIndices().length > 0)
+			{
+				int response = JOptionPane.showConfirmDialog (null, "Delete the selected item(s)?","Confirm",JOptionPane.OK_CANCEL_OPTION);
+
+				if(response == JOptionPane.OK_OPTION)
+				{
+					int[] selectedIndices = myListBox.getSelectedIndices();
+					for (int i = selectedIndices.length-1; i >=0; i--)
+					{
+						myListModel.removeElementAt(selectedIndices[i]);
+						myListModel.trimToSize();
+					}
+					btnDelete.setEnabled(false);
+					getJMenuBar().getMenu(1).getItem(1).setEnabled(false);
+				}
+				else
+				{
+					
+				}
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(null, "No item(s) selected to delete.", "Error!", JOptionPane.ERROR_MESSAGE);
+			}
 		}
-		else if(e.getActionCommand().equals("DELETEALL"))
+
+		else if(event.getActionCommand().equals("DELETEALL"))
 		{
-			System.out.println("Delete all items.");
+			int response = JOptionPane.showConfirmDialog (null, "Delete all item(s)?","Confirm",JOptionPane.OK_CANCEL_OPTION);
+
+			if(response == JOptionPane.OK_OPTION)
+			{
+				myListModel.clear();
+				myListModel.trimToSize();
+			}
+			else
+			{
+				
+			}
 		}
-		else if(e.getActionCommand().equals("EXIT"))
+
+		else if(event.getActionCommand().equals("EXIT"))
 		{
 			System.exit(0);
 		}
-				
+		
+		if(myListModel.isEmpty())
+		{
+			getJMenuBar().getMenu(1).getItem(2).setEnabled(false);
+		}
+		else
+		{
+			getJMenuBar().getMenu(1).getItem(2).setEnabled(true);
+		}
 	}
-	
+
+	@Override
+	public void valueChanged(ListSelectionEvent event)
+	{
+		if(myListBox.getSelectedIndices().length > 0)
+		{
+			btnDelete.setEnabled(true);
+			getJMenuBar().getMenu(1).getItem(1).setEnabled(true);
+		}
+		else
+		{
+			btnDelete.setEnabled(false);
+			getJMenuBar().getMenu(1).getItem(1).setEnabled(false);
+		}
+		
+		if(myListModel.isEmpty())
+		{
+			getJMenuBar().getMenu(1).getItem(2).setEnabled(false);
+		}
+		else
+		{
+			getJMenuBar().getMenu(1).getItem(2).setEnabled(true);
+		}
+	}
 }
