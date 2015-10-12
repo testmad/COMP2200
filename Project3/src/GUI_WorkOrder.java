@@ -1,9 +1,11 @@
+//David Walker - 2200
+//Project 2b
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-
 import javax.swing.*;
 
 public class GUI_WorkOrder
@@ -68,25 +70,8 @@ class MyFrameClass extends JFrame implements ActionListener
 		}
 		else if(event.getActionCommand().equals("EDIT"))
 		{
-			//Uncomment for random generated work order.
 			editDialog = new MyDialog(this, WorkOrder.debugLoad());
-			
-			//Uncomment for loading from file.
-//			FileInputStream fis = null;
-//			try
-//			{
-//				fis = new FileInputStream("workorder.dat");
-//			}
-//			catch (FileNotFoundException e)
-//			{
-//				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-//			}
-//			
-//          DataInputStream dis = new DataInputStream(fis);
-//          editDialog = new MyDialog(this, new WorkOrder().loadOrder(dis));
-//			dis.close();
-//			fis.close();
-            
+           
 			editDialog.setLocationRelativeTo(this);
 			editDialog.setVisible(true);
 		}
@@ -310,57 +295,95 @@ class MyDialog extends JDialog implements ActionListener
 		{
 			System.out.println("clicked save and close");
 			
-			//Uncomment for debug saving.
-			new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
+			boolean dCheck = true;
+			boolean cCheck = true;
 			
-			//Uncomment for real saving.
-//			FileOutputStream fos = null;
-//			
-//			try
-//			{
-//				fos = new FileOutputStream("workorder.dat");
-//			}
-//			catch (FileNotFoundException e)
-//			{
-//				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-//			}
-//			
-//          DataOutputStream dos = new DataOutputStream(fos);
-//          new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).saveOrder(dos);
-//			fos.flush();
-//			fos.close();
-//			dos.close();
+			if(!dateOutField.getText().trim().isEmpty())
+			{
+				try	
+				{
+					SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+		            Date dateIn = sdf.parse(((JTextField)dateInField).getText().trim());
+		            Date dateOut = sdf.parse(((JTextField)dateOutField).getText().trim());
+		            
+		            if(dateIn.after(dateOut))
+		            {
+		            	dCheck = false;
+						JOptionPane.showMessageDialog(null, "Date ordered cannot be after date filled.", "Error!", JOptionPane.ERROR_MESSAGE);
+		            }
+		            else
+		            {
+		            	dCheck = true;
+		            }
+				}
+				catch(ParseException e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+	
+			if(nameField.getText().trim().isEmpty() ||
+				deptCombobox.getSelectedIndex() == 0 ||
+				dateInField.getText().trim().isEmpty() ||
+				rateField.getText().trim().isEmpty())
+			{
+				cCheck = false;
+				JOptionPane.showMessageDialog(null, "Required field(s) is empty.", "Error!", JOptionPane.ERROR_MESSAGE);
+			}
+			else if(dCheck && cCheck)
+			{
+				new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
+				
+				dispose();
+			}
 			
-			
-			dispose();
 		}
 			
 		else if(event.getActionCommand().equals("SAVEANOTHER"))
 		{
 			System.out.println("clicked save and add");
 			
-			//Uncomment for debug saving.
-			new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
+			boolean dCheck = true;
+			boolean cCheck = true;
 			
-			//Uncomment for real saving.
-//			FileOutputStream fos = null;
-//			
-//			try
-//			{
-//				fos = new FileOutputStream("workorder.dat");
-//			}
-//			catch (FileNotFoundException e)
-//			{
-//				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-//			}
-//			
-//          DataOutputStream dos = new DataOutputStream(fos);
-//          new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).saveOrder(dos);
-//			fos.flush();
-//			fos.close();
-//			dos.close();
-            
-			clearData();
+			if(!dateOutField.getText().trim().isEmpty())
+			{
+				try	
+				{
+					SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+		            Date dateIn = sdf.parse(((JTextField)dateInField).getText().trim());
+		            Date dateOut = sdf.parse(((JTextField)dateOutField).getText().trim());
+		            
+		            if(dateIn.after(dateOut))
+		            {
+		            	dCheck = false;
+						JOptionPane.showMessageDialog(null, "Date ordered cannot be after date filled.", "Error!", JOptionPane.ERROR_MESSAGE);
+		            }
+		            else
+		            {
+		            	dCheck = true;
+		            }
+				}
+				catch(ParseException e)
+				{
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+	
+			if(nameField.getText().trim().isEmpty() ||
+				deptCombobox.getSelectedIndex() == 0 ||
+				dateInField.getText().trim().isEmpty() ||
+				rateField.getText().trim().isEmpty())
+			{
+				cCheck = false;
+				JOptionPane.showMessageDialog(null, "Required field(s) is empty.", "Error!", JOptionPane.ERROR_MESSAGE);
+			}
+			else if(dCheck && cCheck)
+			{
+				new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
+				
+				clearData();
+			}
 		}
 	}	
 }
@@ -407,32 +430,23 @@ class WorkOrder
 		rate = tmprate;
 	}
 	
-	static WorkOrder loadOrder(DataInputStream dis)
+	public WorkOrder loadOrder(DataInputStream dis)
 	{
-		String tmpname = null;
-		int tmpdepartment = 0;
-		String tmpdateIn = null;
-		String tmpdateOut = null;
-		String tmpdescription = null;
-		String tmprate = null;
-		
-		System.out.println("LOADING DATA.");
 		try
 		{
-			tmpname = dis.readUTF();
-			tmpdepartment = dis.readInt();
-			tmpdateIn = dis.readUTF();
-			tmpdateOut = dis.readUTF();
-			tmpdescription = dis.readUTF();
-			tmprate = dis.readUTF();
+			name = dis.readUTF();
+			department = dis.readInt();
+			dateIn = dis.readUTF();
+			dateOut = dis.readUTF();
+			description = dis.readUTF();
+			rate = dis.readUTF();
 		}
 		catch (IOException e)
 		{	
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
 		
-		WorkOrder tmp = new WorkOrder(tmpname, tmpdepartment, tmpdateIn, tmpdateOut, tmpdescription, tmprate);
-		System.out.println(tmpdepartment);
+		WorkOrder tmp = new WorkOrder(name, department, dateIn, dateOut, description, rate);
 		return tmp;
 	}
 	
@@ -505,4 +519,3 @@ class WorkOrder
 		return temp;
 	}
 }
-
