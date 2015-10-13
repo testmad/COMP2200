@@ -7,6 +7,7 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
 
 public class GUI_WorkOrder
 {
@@ -25,9 +26,11 @@ class MyFrameClass extends JFrame implements ActionListener
 	
 	public MyFrameClass()
 	{
-		Container cp;
-		JPanel mainPanel;
-		
+		GroupLayout layout = new GroupLayout(getContentPane());
+		getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		 
 		addBtn = new JButton("Add");
 		addBtn.setActionCommand("ADD");
 		addBtn.addActionListener(this);
@@ -38,12 +41,26 @@ class MyFrameClass extends JFrame implements ActionListener
 		editBtn.addActionListener(this);
 		editBtn.setPreferredSize(new Dimension(100,25));
 		
-		mainPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,30,30));
-		mainPanel.add(addBtn);
-		mainPanel.add(editBtn);
-	
-		cp = getContentPane();
-		cp.add(mainPanel, BorderLayout.CENTER);
+		GroupLayout.SequentialGroup hGroup = layout.createSequentialGroup();
+		
+		hGroup.addGroup(layout.createParallelGroup().
+					addComponent(addBtn));
+		hGroup.addGroup(layout.createParallelGroup().
+				addGap(30));
+		hGroup.addGroup(layout.createParallelGroup().
+				addComponent(editBtn));
+		layout.setHorizontalGroup(hGroup);
+		
+		layout.linkSize(SwingConstants.HORIZONTAL, addBtn, editBtn);
+		
+		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
+	   
+		vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+	            addComponent(addBtn).addComponent(editBtn));
+
+		layout.setVerticalGroup(vGroup);
+		
+		pack();
 		
 		getRootPane().setDefaultButton(addBtn);
 		
@@ -52,8 +69,8 @@ class MyFrameClass extends JFrame implements ActionListener
 	
 	void setupMainFrame()
 	{
-		setTitle("WorkOrderDialog");
-		setMinimumSize(new Dimension(306, 124));
+		setTitle("WorkOrder");
+		setMinimumSize(new Dimension(270,90));
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
@@ -71,7 +88,6 @@ class MyFrameClass extends JFrame implements ActionListener
 		else if(event.getActionCommand().equals("EDIT"))
 		{
 			editDialog = new MyDialog(this, WorkOrder.debugLoad());
-           
 			editDialog.setLocationRelativeTo(this);
 			editDialog.setVisible(true);
 		}
@@ -187,22 +203,13 @@ class MyDialog extends JDialog implements ActionListener
 	public MyDialog(JFrame aFrame)
 	{
 		super(aFrame, "New Work Order");
-		addForm();
-
-		JButton saveAddBtn;
-
-		saveAddBtn = new JButton("Save/Another");
-		saveAddBtn.setPreferredSize(new Dimension(100,25));
-		saveAddBtn.setActionCommand("SAVEANOTHER");
-		saveAddBtn.addActionListener(this);
-
-		this.add(saveAddBtn);
+		addForm(1);
 	}
 	
 	public MyDialog(JFrame aFrame, WorkOrder wo)
 	{
 		super(aFrame, "Edit Work Order");
-		addForm();
+		addForm(0);
 		
 		this.nameField.setText(wo.name);
 		this.deptCombobox.setSelectedIndex(wo.department);
@@ -212,12 +219,17 @@ class MyDialog extends JDialog implements ActionListener
 		this.rateField.setText(wo.rate);
 	}
 	
-	void addForm()
+	void addForm(int type)
 	{
-		this.setSize(300,400);
+		this.setMinimumSize(new Dimension(400,250));
 		this.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		this.setLayout(new GridLayout(10, 1));
+		
+		Dimension tfSize = new Dimension(100,27);
+		GroupLayout layout = new GroupLayout(getContentPane());
+		getContentPane().setLayout(layout);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
 		
 		JLabel nameLbl = new JLabel(labelNames[0]);
 		JLabel deptLbl = new JLabel(labelNames[1]);
@@ -226,50 +238,96 @@ class MyDialog extends JDialog implements ActionListener
 		JLabel descLbl = new JLabel(labelNames[4]);
 		JLabel rateLbl = new JLabel(labelNames[5]);
 		
-		nameField = new JTextField();
-		deptCombobox = new JComboBox<String>(comboItems);
-		dateInField = new JTextField();
-		dateOutField = new JTextField();
-		descField = new JTextField();
-		rateField = new JTextField();
-		
-		TextVerifier tv = new TextVerifier();
-		DateVerifier dv = new DateVerifier();
-		RateVerifier rv = new RateVerifier();
-		
-		this.add(nameLbl);
-		this.add(nameField);
-		nameField.setInputVerifier(tv);
-		this.add(deptLbl);
-		this.add(deptCombobox);
-		this.add(dateInLbl);
-		this.add(dateInField);
-		dateInField.setInputVerifier(dv);
-		this.add(dateOutLbl);
-		this.add(dateOutField);
-		dateOutField.setInputVerifier(dv);
-		this.add(descLbl);
-		this.add(descField);
-		descField.setInputVerifier(tv);
-		this.add(rateLbl);
-		this.add(rateField);
-		rateField.setInputVerifier(rv);
-		
 		JButton cancelBtn;
 		JButton saveCloseBtn;
+		JButton saveAddBtn;
+
+		saveAddBtn = new JButton("Save/Another");
+		saveAddBtn.setActionCommand("SAVEANOTHER");
+		saveAddBtn.addActionListener(this);
 		
 		cancelBtn = new JButton("Cancel");
-		cancelBtn.setPreferredSize(new Dimension(100,25));
 		cancelBtn.setActionCommand("CANCEL");
 		cancelBtn.addActionListener(this);
 		
 		saveCloseBtn = new JButton("Save/Close");
-		saveCloseBtn.setPreferredSize(new Dimension(100,25));
 		saveCloseBtn.setActionCommand("SAVECLOSE");
 		saveCloseBtn.addActionListener(this);
+		
+		nameField = new JTextField();
+		nameField.setPreferredSize(tfSize);
+		deptCombobox = new JComboBox<String>(comboItems);
+		dateInField = new JTextField();
+		dateInField.setPreferredSize(tfSize);
+		dateOutField = new JTextField();
+		dateOutField.setPreferredSize(tfSize);
+		descField = new JTextField();
+		descField.setPreferredSize(tfSize);
+		rateField = new JTextField();
+		rateField.setPreferredSize(tfSize);
 
-		this.add(cancelBtn);
-		this.add(saveCloseBtn);
+		TextVerifier tv = new TextVerifier();
+		DateVerifier dv = new DateVerifier();
+		RateVerifier rv = new RateVerifier();
+		
+		GroupLayout.SequentialGroup hGroup = layout.createSequentialGroup();
+		
+		hGroup.addGroup(layout.createParallelGroup().
+	            addComponent(nameLbl).addComponent(deptLbl).addComponent(dateInLbl).addComponent(dateOutLbl).addComponent(descLbl).addComponent(rateLbl));
+		hGroup.addGroup(layout.createParallelGroup().
+	            addComponent(nameField).addComponent(deptCombobox).addComponent(dateInField).addComponent(dateOutField).addComponent(descField).addComponent(rateField));
+		
+		if(type == 1)
+		{
+			hGroup.addGroup(layout.createParallelGroup().
+				addComponent(saveAddBtn).addComponent(saveCloseBtn).addComponent(cancelBtn));
+		}
+		else
+		{
+			hGroup.addGroup(layout.createParallelGroup().
+					addComponent(saveCloseBtn).addComponent(cancelBtn));
+		}
+		layout.setHorizontalGroup(hGroup);
+		
+		if(type == 1)
+			layout.linkSize(SwingConstants.HORIZONTAL, saveAddBtn, saveCloseBtn, cancelBtn);
+		else
+			layout.linkSize(SwingConstants.HORIZONTAL, saveCloseBtn, cancelBtn);
+		
+		GroupLayout.SequentialGroup vGroup = layout.createSequentialGroup();
+	   
+		if(type == 1)
+		{
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(nameLbl).addComponent(nameField).addComponent(saveAddBtn));
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(deptLbl).addComponent(deptCombobox).addComponent(saveCloseBtn));
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(dateInLbl).addComponent(dateInField).addComponent(cancelBtn));
+		}
+		else
+		{
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(nameLbl).addComponent(nameField).addComponent(saveCloseBtn));
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(deptLbl).addComponent(deptCombobox).addComponent(cancelBtn));
+			vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+		            addComponent(dateInLbl).addComponent(dateInField));
+		}
+		
+		vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+	            addComponent(dateOutLbl).addComponent(dateOutField));
+		vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+	            addComponent(descLbl).addComponent(descField));
+		vGroup.addGroup(layout.createParallelGroup(Alignment.BASELINE).
+	            addComponent(rateLbl).addComponent(rateField));
+		layout.setVerticalGroup(vGroup);
+
+		nameField.setInputVerifier(tv);
+		dateInField.setInputVerifier(dv);
+		dateOutField.setInputVerifier(dv);
+		descField.setInputVerifier(tv);
+		rateField.setInputVerifier(rv);
 	}
 	
 	void clearData()
@@ -287,14 +345,11 @@ class MyDialog extends JDialog implements ActionListener
 	{
 		if(event.getActionCommand().equals("CANCEL"))
 		{
-			System.out.println("clicked cancel");
 			dispose();
 		}
 		
 		else if(event.getActionCommand().equals("SAVECLOSE"))
 		{
-			System.out.println("clicked save and close");
-			
 			boolean dCheck = true;
 			boolean cCheck = true;
 			
@@ -333,7 +388,6 @@ class MyDialog extends JDialog implements ActionListener
 			else if(dCheck && cCheck)
 			{
 				new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
-				
 				dispose();
 			}
 			
@@ -341,8 +395,6 @@ class MyDialog extends JDialog implements ActionListener
 			
 		else if(event.getActionCommand().equals("SAVEANOTHER"))
 		{
-			System.out.println("clicked save and add");
-			
 			boolean dCheck = true;
 			boolean cCheck = true;
 			
@@ -381,8 +433,8 @@ class MyDialog extends JDialog implements ActionListener
 			else if(dCheck && cCheck)
 			{
 				new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), rateField.getText()).debugSave();
-				
 				clearData();
+				nameField.requestFocus();
 			}
 		}
 	}	
@@ -452,8 +504,6 @@ class WorkOrder
 	
 	void saveOrder(DataOutputStream dos)
 	{
-		String newLine = System.getProperty("line.separator");
-		
 		System.out.println("SAVING DATA.");
 		try
 		{
