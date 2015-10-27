@@ -32,7 +32,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	JButton exitBtn;
 	
 	CustomTableModel ctm;
-	JTable table;
+	public JTable table;
 	
 	DropTarget dropTarget;
 	
@@ -84,7 +84,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		exitBtn.addActionListener(this);
 		exitBtn.setPreferredSize(new Dimension(100,25));
 		
-		ctm = new CustomTableModel();
+		ctm = new CustomTableModel(this);
 		table = new JTable(ctm);
 		ctm.addTableModelListener(this);
 
@@ -541,9 +541,10 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		{
 			
 			//int index = table.getRowSorter().convertRowIndexToView(event.getFirstRow());
-			//System.out.println(event.getFirstRow());
+			//System.out.println("In inserted fire: " + event.getFirstRow());
+			//System.out.println("After event index access.");
 			//System.out.println(ctm.customListModel.get(event.getFirstRow()));
-			table.scrollRectToVisible(table.getCellRect(table.convertRowIndexToView(event.getFirstRow()), 0, true));
+			//table.scrollRectToVisible(table.getCellRect(table.convertRowIndexToView(event.getFirstRow()), 0, true));
 			//table.scrollRectToVisible(table.getCellRect(event.getFirstRow(),0, true));
 			//table.setRowSelectionInterval(table.convertRowIndexToView(event.getFirstRow()), table.convertRowIndexToView(event.getFirstRow()));
 		}
@@ -758,15 +759,16 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 
 	}
 	
-	public int scrollTo(int index)
+	public void scrollTo(int index)
 	{
-		int sortedIndex = table.convertRowIndexToView(index);
-		//System.out.println(index);
-		//table.scrollRectToVisible(table.getCellRect(sortedIndex, 0, true));
-		//table.scrollRectToVisible(table.getCellRect(event.getFirstRow(),0, true));
-		//table.setRowSelectionInterval(event.getFirstRow(), event.getFirstRow());
-		return sortedIndex;
+		int newIndex =  table.convertRowIndexToView(index);
+		table.scrollRectToVisible(table.getCellRect(newIndex, 0, true));
+		table.setRowSelectionInterval(newIndex, newIndex);
 	}
-	
-	
 }
+
+
+
+
+
+

@@ -6,10 +6,12 @@ import javax.swing.*;
 public class CustomListModel extends DefaultListModel implements DataManager
 {
 	CustomTableModel tm;
+	MainFrame	frame;
 	
-	public CustomListModel(CustomTableModel atm)
+	public CustomListModel(CustomTableModel atm, MainFrame jframe)
 	{
 		tm = atm;
+		frame = jframe;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -21,9 +23,7 @@ public class CustomListModel extends DefaultListModel implements DataManager
 		
 		tm.fireTableDataChanged();
 		
-		//tm.fireTableRowsInserted(this.getSize()-1, this.getSize()-1);
-		
-		
+		frame.scrollTo(this.getSize()-1);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -34,11 +34,8 @@ public class CustomListModel extends DefaultListModel implements DataManager
 		MainFrame.hasChanges = true;
 		
 		tm.fireTableDataChanged();
-		
-		
-		//tm.fireTableRowsInserted(index, index);
-		
-
+				
+		frame.scrollTo(index);
 	}
 
 	@SuppressWarnings("unchecked")

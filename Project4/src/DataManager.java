@@ -1,3 +1,4 @@
+import javax.swing.JTable;
 
 public interface DataManager
 {
