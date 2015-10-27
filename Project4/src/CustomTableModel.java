@@ -1,4 +1,5 @@
 import java.text.DecimalFormat;
+import java.util.Date;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -7,7 +8,7 @@ public class CustomTableModel extends AbstractTableModel
 {
 	CustomListModel customListModel;
 	
-	private String[] columnNames = new String[]{"Name","Department","Date In","DateOut","Description", "Rate"};
+	private String[] columnNames = new String[]{"Employee Name","Department","Date Ordered","Date Filled","Job Description", "Hourly Rate"};
 	
 	private String[] deptNames = new String[]{"DUMMY", "SALES", "HARDWARE", "ELECTRONICS"};
 	
@@ -51,6 +52,24 @@ public class CustomTableModel extends AbstractTableModel
 			return tmp;
 		}
 			
+		else
+			return null;
+	}
+	
+	public Class getColumnClass(int columnIndex)
+	{
+		if(columnIndex == 0)
+			return String.class;
+		else if(columnIndex == 1)
+			return Integer.class;
+		else if(columnIndex == 2)
+			return String.class;
+		else if(columnIndex == 3)
+			return String.class;
+		else if(columnIndex == 4)
+			return String.class;
+		else if(columnIndex == 5)
+			return String.class;
 		else
 			return null;
 	}

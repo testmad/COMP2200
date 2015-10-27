@@ -9,7 +9,7 @@ import javax.swing.GroupLayout.*;
 @SuppressWarnings("serial")
 public class WorkOrderDialog extends JDialog implements ActionListener
 {
-	String[] labelNames = {"Name:", "Department:", "Date Ordered:", "Date Filled:", "Description:", "Billing Rate:"};
+	String[] labelNames = {"Employee Name:", "Department:", "Date Ordered:", "Date Filled:", "Job Description:", "Hourly Rate:"};
 	String[] comboItems = {"Select...", "SALES", "HARDWARE", "ELECTRONICS"}; 
 	
 	private JTextField nameField;
@@ -22,6 +22,8 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 	int editIndex = -1;
 
 	DataManager dm;
+	
+	FocusPolicy newPolicy;
 	
 	public WorkOrderDialog(DataManager datamanager, JFrame frame)
 	{
@@ -65,10 +67,22 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		JLabel descLbl = new JLabel(labelNames[4]);
 		JLabel rateLbl = new JLabel(labelNames[5]);
 		
+		nameField = new JTextField();
+		nameField.setPreferredSize(tfSize);
+		deptCombobox = new JComboBox<String>(comboItems);
+		dateInField = new JTextField();
+		dateInField.setPreferredSize(tfSize);
+		dateOutField = new JTextField();
+		dateOutField.setPreferredSize(tfSize);
+		descField = new JTextField();
+		descField.setPreferredSize(tfSize);
+		rateField = new JTextField();
+		rateField.setPreferredSize(tfSize);
+		
 		JButton cancelBtn;
 		JButton saveCloseBtn;
 		JButton saveAddBtn;
-
+		
 		saveAddBtn = new JButton("Add Another");
 		saveAddBtn.setActionCommand("SAVEANOTHER");
 		saveAddBtn.addActionListener(this);
@@ -81,17 +95,13 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		saveCloseBtn.setActionCommand("SAVECLOSE");
 		saveCloseBtn.addActionListener(this);
 		
-		nameField = new JTextField();
-		nameField.setPreferredSize(tfSize);
-		deptCombobox = new JComboBox<String>(comboItems);
-		dateInField = new JTextField();
-		dateInField.setPreferredSize(tfSize);
-		dateOutField = new JTextField();
-		dateOutField.setPreferredSize(tfSize);
-		descField = new JTextField();
-		descField.setPreferredSize(tfSize);
-		rateField = new JTextField();
-		rateField.setPreferredSize(tfSize);
+//		JPanel labelPnl = new JPanel();
+//		labelPnl.add(nameLbl);
+//		labelPnl.add(deptLbl);
+//		labelPnl.add(dateInLbl);
+//		labelPnl.add(dateOutLbl);
+//		labelPnl.add(descLbl);
+//		labelPnl.add(nameLbl);
 
 		TextVerifier tv = new TextVerifier();
 		DateVerifier dv = new DateVerifier();
@@ -198,6 +208,35 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		
 		layout.setVerticalGroup(vGroup);
 
+		Vector<Component> orderAdd = new Vector<Component>(9);
+		orderAdd.add(nameField);
+		orderAdd.add(deptCombobox);
+		orderAdd.add(dateInField);
+		orderAdd.add(dateOutField);
+		orderAdd.add(descField);
+		orderAdd.add(rateField);
+		orderAdd.add(saveAddBtn);
+		orderAdd.add(saveCloseBtn);
+		orderAdd.add(cancelBtn);
+	    
+	    Vector<Component> orderEdit = new Vector<Component>(8);
+	    orderEdit.add(nameField);
+	    orderEdit.add(deptCombobox);
+	    orderEdit.add(dateInField);
+	    orderEdit.add(dateOutField);
+	    orderEdit.add(descField);
+	    orderEdit.add(rateField);
+	    orderEdit.add(saveCloseBtn);
+	    orderEdit.add(cancelBtn);
+	    
+	    if(type==1)
+	    	newPolicy = new FocusPolicy(orderAdd);
+	    else
+	    	newPolicy = new FocusPolicy(orderEdit);
+	    
+	    
+	    this.setFocusTraversalPolicy(newPolicy);
+		
 		nameField.setInputVerifier(tv);
 		dateInField.setInputVerifier(dv);
 		dateOutField.setInputVerifier(dv);
@@ -220,7 +259,6 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 	{
 		if(event.getActionCommand().equals("CANCEL"))
 		{
-			dm.hasChanged(false);
 			dispose();
 		}
 		
@@ -266,7 +304,7 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 				WorkOrder tmp = new WorkOrder(nameField.getText(), deptCombobox.getSelectedIndex(), dateInField.getText(), dateOutField.getText(), descField.getText(), Double.parseDouble(rateField.getText()));
 				dm.addWorkOrder(tmp);
 				clearData();
-				dm.hasChanged(true);
+				//dm.hasChanged();
 				nameField.requestFocus();
 			}
 		}
@@ -319,9 +357,50 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 					dm.replaceWorkOrder(tmp, editIndex);
 				}
 				
-				dm.hasChanged(true);
+				//dm.hasChanged();
 				dispose();
 			}
 		}
 	}
+	
+	
+}
+
+class FocusPolicy
+extends FocusTraversalPolicy
+{
+Vector<Component> order;
+
+public FocusPolicy(Vector<Component> order) {
+this.order = new Vector<Component>(order.size());
+this.order.addAll(order);
+}
+public Component getComponentAfter(Container focusCycleRoot,
+                         Component aComponent)
+{
+int idx = (order.indexOf(aComponent) + 1) % order.size();
+return order.get(idx);
+}
+
+public Component getComponentBefore(Container focusCycleRoot,
+                          Component aComponent)
+{
+int idx = order.indexOf(aComponent) - 1;
+if (idx < 0) {
+idx = order.size() - 1;
+}
+return order.get(idx);
+}
+
+public Component getDefaultComponent(Container focusCycleRoot) {
+return order.get(0);
+}
+
+public Component getLastComponent(Container focusCycleRoot) {
+return order.lastElement();
+}
+
+public Component getFirstComponent(Container focusCycleRoot) {
+return order.get(0);
+}
 }

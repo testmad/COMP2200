@@ -17,7 +17,13 @@ public class CustomListModel extends DefaultListModel implements DataManager
 	public void addWorkOrder(WorkOrder wo)
 	{
 		this.addElement(wo);
+		MainFrame.hasChanges = true;
+		
 		tm.fireTableDataChanged();
+		
+		//tm.fireTableRowsInserted(this.getSize()-1, this.getSize()-1);
+		
+		
 	}
 
 	@SuppressWarnings("unchecked")
@@ -25,7 +31,14 @@ public class CustomListModel extends DefaultListModel implements DataManager
 	public void replaceWorkOrder(WorkOrder wo, int index)
 	{
 		this.set(index, wo);
+		MainFrame.hasChanges = true;
+		
 		tm.fireTableDataChanged();
+		
+		
+		//tm.fireTableRowsInserted(index, index);
+		
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,12 +97,5 @@ public class CustomListModel extends DefaultListModel implements DataManager
 		{
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
-	}
-
-	@Override
-	public void hasChanged(Boolean changed)
-	{
-		MainFrame.hasChanges = changed;
-		tm.fireTableDataChanged();
 	}
 }

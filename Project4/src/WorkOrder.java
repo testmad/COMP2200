@@ -85,7 +85,7 @@ public class WorkOrder
 		String tmpdateIn = tmpdate;
 		String tmpdateOut = tmpdate2;
 		String tmpdescription = "" + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10)) + " " + randString(r.nextInt(10));
-		Double tmprate = Double.parseDouble(decim.format(r.nextDouble() * r.nextInt(5)));
+		Double tmprate = Double.parseDouble(decim.format(r.nextDouble() * 10));
 		
 		WorkOrder tmp = new WorkOrder(tmpname, tmpdepartment, tmpdateIn, tmpdateOut, tmpdescription, tmprate);
 		

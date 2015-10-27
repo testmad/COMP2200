@@ -22,12 +22,17 @@ public class RateVerifier extends InputVerifier
 			{
 				DecimalFormat decim = new DecimalFormat("0.00");
 				Double tmp1 = Double.parseDouble(((JTextField)input).getText().trim().replaceAll(",",""));
-				String tmp2 = decim.format(tmp1);
-				((JTextField)input).setText(tmp2);
+				if(tmp1 < 0 || tmp1 > 500  )
+					throw new NumberFormatException();
+				else
+				{
+					String tmp2 = decim.format(tmp1);
+					((JTextField)input).setText(tmp2);
+				}
 			}
 			catch(NumberFormatException nfe)
 			{
-				JOptionPane.showMessageDialog(null, "Invalid rate amount." + System.getProperty("line.separator") + "Amount example: 3,012.50 or 3012.5", "Error!", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Invalid rate amount." + System.getProperty("line.separator") + "Amount example: 312.50 or 312.5", "Error!", JOptionPane.ERROR_MESSAGE);
 				return false;
 			}
 		return true;

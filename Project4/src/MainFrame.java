@@ -12,9 +12,11 @@ import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 @SuppressWarnings("serial")
-public class MainFrame extends JFrame implements ActionListener, ListSelectionListener, TableModelListener, DropTargetListener
+public class MainFrame extends JFrame implements ActionListener, ListSelectionListener, TableModelListener, DropTargetListener, WindowListener, MouseListener
 {
 	JFileChooser fileChooser;
 	String fileName;
@@ -40,6 +42,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 	public MainFrame()
 	{
+		addWindowListener(this);
 		hasChanges = false;
 		setJMenuBar(new MenuBar(this));
 		
@@ -84,10 +87,11 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		ctm = new CustomTableModel();
 		table = new JTable(ctm);
 		ctm.addTableModelListener(this);
-		table.setRowSelectionAllowed(true);
-		table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+		//table.setRowSelectionAllowed(true);
+		//table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		table.getSelectionModel().addListSelectionListener(this);
-		table.addMouseListener(new TableMouseListener(table));
+		table.addMouseListener(this);
 		
 		table.setComponentPopupMenu(new PopupMenu(this));
 		
@@ -139,6 +143,8 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 		pack();
 		
+	    table.setRowSorter(new TableRowSorter<CustomTableModel>(ctm));
+		
 		getRootPane().setDefaultButton(addBtn);
 		
 		fileChooser = new JFileChooser(".");
@@ -153,7 +159,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		setTitle("Work Order Table");
 		setMinimumSize(new Dimension(700,400));
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setVisible(true);
 	}
 
@@ -334,6 +340,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 			newDialog = new WorkOrderDialog(ctm.customListModel, this);
 			newDialog.setLocationRelativeTo(this);
 			newDialog.setVisible(true);
+			
 		}
 		else if(event.getActionCommand().equals("EDIT"))
 		{
@@ -341,6 +348,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 			editDialog = new WorkOrderDialog(ctm.customListModel, this, index, (WorkOrder) ctm.customListModel.get(index));
 			editDialog.setLocationRelativeTo(this);
 			editDialog.setVisible(true);
+			
 		}
 		
 		else if(event.getActionCommand().equals("COMPLETE"))
@@ -382,13 +390,15 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 		else if(event.getActionCommand().equals("DELETE"))
 		{
-			int index = table.convertRowIndexToModel(table.getSelectedRow());
+			int[] index = table.getSelectedRows();
 			
-			int response = JOptionPane.showConfirmDialog (null, "Delete the selected item?","Confirm",JOptionPane.OK_CANCEL_OPTION);
+			int response = JOptionPane.showConfirmDialog (null, "Delete the selected item(s)?","Confirm",JOptionPane.OK_CANCEL_OPTION);
 
 			if(response == JOptionPane.OK_OPTION)
 			{
-				ctm.customListModel.remove(index);
+				for(int i=index.length - 1; i >= 0;i--)
+					ctm.customListModel.remove(table.convertRowIndexToModel(index[i]));
+
 				hasChanges = true;
 				ctm.fireTableDataChanged();
 			}
@@ -480,6 +490,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 			delBtn.setEnabled(true);
 			getJMenuBar().getMenu(1).getItem(1).setEnabled(true);
 			getJMenuBar().getMenu(1).getItem(2).setEnabled(true);
+			table.getComponentPopupMenu().getComponent(0).setEnabled(true);
 		}
 		else if(selectedRows.length > 1)
 		{
@@ -487,6 +498,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 			delBtn.setEnabled(true);
 			getJMenuBar().getMenu(1).getItem(1).setEnabled(false);
 			getJMenuBar().getMenu(1).getItem(2).setEnabled(true);
+			table.getComponentPopupMenu().getComponent(0).setEnabled(false);
 		}
 		else
 		{
@@ -494,6 +506,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 			delBtn.setEnabled(false);
 			getJMenuBar().getMenu(1).getItem(1).setEnabled(false);
 			getJMenuBar().getMenu(1).getItem(2).setEnabled(false);
+			table.getComponentPopupMenu().getComponent(0).setEnabled(false);
 		}
 	}
 
@@ -522,6 +535,17 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		{
 			getJMenuBar().getMenu(0).getItem(2).setEnabled(true);
 			getJMenuBar().getMenu(1).getItem(3).setEnabled(true);
+		}
+		
+		if(event.getType() == TableModelEvent.INSERT)
+		{
+			
+			//int index = table.getRowSorter().convertRowIndexToView(event.getFirstRow());
+			//System.out.println(event.getFirstRow());
+			//System.out.println(ctm.customListModel.get(event.getFirstRow()));
+			table.scrollRectToVisible(table.getCellRect(table.convertRowIndexToView(event.getFirstRow()), 0, true));
+			//table.scrollRectToVisible(table.getCellRect(event.getFirstRow(),0, true));
+			//table.setRowSelectionInterval(table.convertRowIndexToView(event.getFirstRow()), table.convertRowIndexToView(event.getFirstRow()));
 		}
 	}
 
@@ -650,4 +674,99 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	{
 		
 	}
+
+	@Override
+	public void windowActivated(WindowEvent event)
+	{
+
+	}
+
+	@Override
+	public void windowClosed(WindowEvent event)
+	{
+
+	}
+
+	@Override
+	public void windowClosing(WindowEvent event)
+	{
+	    this.actionPerformed(new ActionEvent(this, getDefaultCloseOperation(), "EXIT"));
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent event)
+	{
+	
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent event)
+	{
+
+	}
+
+	@Override
+	public void windowIconified(WindowEvent event)
+	{
+
+	}
+
+	@Override
+	public void windowOpened(WindowEvent event)
+	{
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent event)
+	{
+		if (event.getClickCount() == 2)
+		{
+	        this.actionPerformed(new ActionEvent(this,0, "EDIT"));
+        }
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent event)
+	{
+	
+	}
+
+	@Override
+	public void mouseExited(MouseEvent event)
+	{
+	
+	}
+
+	@Override
+	public void mousePressed(MouseEvent event)
+	{
+		if (event.getButton() == MouseEvent.BUTTON3)
+		{
+			if(table.getSelectedRowCount() < 1)
+			{
+				Point point = event.getPoint();
+		        int currentRow = table.rowAtPoint(point);
+		        table.setRowSelectionInterval(currentRow, currentRow);
+			}
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent event)
+	{
+
+	}
+	
+	public int scrollTo(int index)
+	{
+		int sortedIndex = table.convertRowIndexToView(index);
+		//System.out.println(index);
+		//table.scrollRectToVisible(table.getCellRect(sortedIndex, 0, true));
+		//table.scrollRectToVisible(table.getCellRect(event.getFirstRow(),0, true));
+		//table.setRowSelectionInterval(event.getFirstRow(), event.getFirstRow());
+		return sortedIndex;
+	}
+	
+	
 }
