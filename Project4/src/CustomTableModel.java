@@ -1,8 +1,4 @@
-import java.text.DecimalFormat;
 import java.util.Calendar;
-import java.util.Date;
-
-import javax.swing.JFrame;
 import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
@@ -51,15 +47,14 @@ public class CustomTableModel extends AbstractTableModel
 			return w.description;
 		else if(columnIndex == 5)
 		{
-			DecimalFormat decim = new DecimalFormat("0.00");
-			String tmp = decim.format(w.rate);
-			return tmp;
+			return w.rate;
 		}
 			
 		else
 			return null;
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Class getColumnClass(int columnIndex)
 	{
 		if(columnIndex == 0)
@@ -73,7 +68,7 @@ public class CustomTableModel extends AbstractTableModel
 		else if(columnIndex == 4)
 			return String.class;
 		else if(columnIndex == 5)
-			return String.class;
+			return Double.class;
 		else
 			return null;
 	}

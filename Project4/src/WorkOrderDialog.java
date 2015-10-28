@@ -95,14 +95,6 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		saveCloseBtn.setActionCommand("SAVECLOSE");
 		saveCloseBtn.addActionListener(this);
 		
-//		JPanel labelPnl = new JPanel();
-//		labelPnl.add(nameLbl);
-//		labelPnl.add(deptLbl);
-//		labelPnl.add(dateInLbl);
-//		labelPnl.add(dateOutLbl);
-//		labelPnl.add(descLbl);
-//		labelPnl.add(nameLbl);
-
 		TextVerifier tv = new TextVerifier();
 		DateVerifier dv = new DateVerifier();
 		RateVerifier rv = new RateVerifier();
@@ -279,6 +271,7 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		            {
 		            	dCheck = false;
 						JOptionPane.showMessageDialog(null, "Date ordered cannot be after date filled.", "Error!", JOptionPane.ERROR_MESSAGE);
+						
 		            }
 		            else
 		            {
@@ -298,6 +291,13 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 			{
 				cCheck = false;
 				JOptionPane.showMessageDialog(null, "Required field(s) is empty.", "Error!", JOptionPane.ERROR_MESSAGE);
+				
+				if(nameField.getText().trim().isEmpty())
+					nameField.requestFocus();
+				else if(dateInField.getText().trim().isEmpty())
+					dateInField.requestFocus();
+				else if(rateField.getText().trim().isEmpty())
+					rateField.requestFocus();
 			}
 			else if(dCheck && cCheck)
 			{
@@ -344,6 +344,13 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 			{
 				cCheck = false;
 				JOptionPane.showMessageDialog(null, "Required field(s) is empty.", "Error!", JOptionPane.ERROR_MESSAGE);
+				
+				if(nameField.getText().trim().isEmpty())
+					nameField.requestFocus();
+				else if(dateInField.getText().trim().isEmpty())
+					dateInField.requestFocus();
+				else if(rateField.getText().trim().isEmpty())
+					rateField.requestFocus();
 			}
 			else if(dCheck && cCheck)
 			{
@@ -356,51 +363,9 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 				{
 					dm.replaceWorkOrder(tmp, editIndex);
 				}
-				
-				//dm.hasChanged();
+
 				dispose();
 			}
 		}
 	}
-	
-	
-}
-
-class FocusPolicy
-extends FocusTraversalPolicy
-{
-Vector<Component> order;
-
-public FocusPolicy(Vector<Component> order) {
-this.order = new Vector<Component>(order.size());
-this.order.addAll(order);
-}
-public Component getComponentAfter(Container focusCycleRoot,
-                         Component aComponent)
-{
-int idx = (order.indexOf(aComponent) + 1) % order.size();
-return order.get(idx);
-}
-
-public Component getComponentBefore(Container focusCycleRoot,
-                          Component aComponent)
-{
-int idx = order.indexOf(aComponent) - 1;
-if (idx < 0) {
-idx = order.size() - 1;
-}
-return order.get(idx);
-}
-
-public Component getDefaultComponent(Container focusCycleRoot) {
-return order.get(0);
-}
-
-public Component getLastComponent(Container focusCycleRoot) {
-return order.lastElement();
-}
-
-public Component getFirstComponent(Container focusCycleRoot) {
-return order.get(0);
-}
 }
