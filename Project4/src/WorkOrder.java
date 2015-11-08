@@ -23,34 +23,41 @@ public class WorkOrder
 		rate = tmprate;
 	}
 	
-	static WorkOrder loadOrder(DataInputStream dis)
+	WorkOrder(DataInputStream dis)
 	{
-		String tname = null ;
-		int tdepartment = 0;
-		String tdateIn = null;
-		String tdateOut = null;
-		String tdescription = null ;
-		Double trate = null;
-		
 		try
 		{
-			tname = dis.readUTF();
-			tdepartment = dis.readInt();
-			tdateIn = dis.readUTF();
-			tdateOut = dis.readUTF();
-			tdescription = dis.readUTF();
-			trate = dis.readDouble();
+			name = dis.readUTF();
+			department = dis.readInt();
+			dateIn = dis.readUTF();
+			dateOut = dis.readUTF();
+			description = dis.readUTF();
+			rate = dis.readDouble();
 		}
 		catch (IOException e)
 		{	
 			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		}
-		
-		WorkOrder wo = new WorkOrder(tname, tdepartment, tdateIn, tdateOut, tdescription, trate);
-		return wo;
 	}
 	
-	static void saveOrder(DataOutputStream dos, WorkOrder wo)
+	void saveOrder(DataOutputStream dos)
+	{
+		try
+		{
+			dos.writeUTF(name);
+			dos.writeInt(department);
+			dos.writeUTF(dateIn);
+			dos.writeUTF(dateOut);
+			dos.writeUTF(description);
+			dos.writeDouble(rate);
+		}
+		catch (IOException e)
+		{	
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	static void saveOrderDebug(DataOutputStream dos, WorkOrder wo)
 	{
 		try
 		{

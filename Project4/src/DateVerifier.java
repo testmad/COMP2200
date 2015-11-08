@@ -16,6 +16,8 @@ public class DateVerifier extends InputVerifier
 		DateFormat df2 = new SimpleDateFormat("MM-dd-yy");
 		DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
 		
+		ParsePosition pos = new ParsePosition(0);
+		
 		df1.setLenient(false);
 		df2.setLenient(false);
 		
@@ -23,6 +25,8 @@ public class DateVerifier extends InputVerifier
 		strDate = ((JTextField)input).getText().trim();
 		
 		Date date;
+		
+		Date today = Calendar.getInstance().getTime();
 		
 		if(strDate.equals(""))
 		{
@@ -33,15 +37,22 @@ public class DateVerifier extends InputVerifier
 		{
 			try
 			{
-				date = df1.parse(strDate);
-				((JTextField)input).setText(df3.format(date));
+				date = df1.parse(strDate, pos);
+				if(pos.getIndex() == strDate.length() && date != null)
+					((JTextField)input).setText(df3.format(date));
+				else
+					throw new ParseException(strDate, 0);
 			}
 			catch(ParseException e1)
 			{
 				try
 				{
-					date = df2.parse(strDate);
-					((JTextField)input).setText(df3.format(date));
+					pos.setIndex(0);
+					date = df2.parse(strDate, pos);
+					if(pos.getIndex() == strDate.length() && date != null)
+						((JTextField)input).setText(df3.format(date));
+					else
+						throw new ParseException(strDate, 0);
 				}
 				catch(ParseException e2)
 				{
@@ -49,7 +60,16 @@ public class DateVerifier extends InputVerifier
 					return false;
 				}
 			}
-		return true;
+		}
+			
+		if(date.after(today))
+		{
+			JOptionPane.showMessageDialog(null, "Future dates not valid", "Error!", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		else
+		{
+			return true;
 		}
 	}
 }

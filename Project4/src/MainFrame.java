@@ -67,12 +67,12 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 		else if(event.getActionCommand().equals("SAVE"))
 		{
-			saveAsData();
+			saveData();
 		}
 		
 		else if(event.getActionCommand().equals("SAVEAS"))
 		{
-			saveData();
+			saveAsData();
 		}
 		
 		else if(event.getActionCommand().equals("ADD"))
@@ -289,7 +289,11 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	{
 		if (event.getClickCount() == 2)
 		{
-	        this.actionPerformed(new ActionEvent(this,0, "EDIT"));
+			if(table.getSelectedRowCount() <= 1)
+			{
+				this.actionPerformed(new ActionEvent(this,0, "EDIT"));
+			}
+			
         }
 	}
 
@@ -411,7 +415,15 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 	    table.setRowSorter(new TableRowSorter<CustomTableModel>(ctm));
 		
-		getRootPane().setDefaultButton(addBtn);
+	    //ScrollPane is grabbing focus and keeping it for some reason.  May be do to grouplayout.
+	    //Doing this forces a traversal policy and allows the defaultbutton to work again. 
+	    Vector<Component> order = new Vector<Component>();
+	    order.add(scrollpane);
+	    
+	    FocusPolicy newPolicy = new FocusPolicy(order);
+	    
+	    this.setFocusTraversalPolicy(newPolicy);
+		this.getRootPane().setDefaultButton(addBtn);
 	}
 	
 	private void setupMainFrame()
@@ -426,6 +438,8 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	@SuppressWarnings("resource")
 	public void loadData()
 	{
+		String tmpFileException = null;
+		
 		if(hasChanges)
 		{
 			int response = JOptionPane.showConfirmDialog (null, "The current table has unsaved changes.\nAre you sure you want to continue?","Confirm",JOptionPane.OK_CANCEL_OPTION);
@@ -454,7 +468,13 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 							ctm.fireTableDataChanged();
 						}
 						else
-							throw new IOException("Unsupported File Type: " + fileName);
+						{
+							tmpFileException = fileName;
+							fileName = null;
+							fileChooser.setCurrentDirectory(new File("."));
+							fileChooser.setSelectedFile(new File(""));
+							throw new IOException("Unsupported File Type: " + tmpFileException);
+						}
 					}
 					catch(Exception e)
 					{
@@ -495,7 +515,13 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 						ctm.fireTableDataChanged();
 					}
 					else
-						throw new IOException("Unsupported File Type: " + fileName);
+					{
+						tmpFileException = fileName;
+						fileName = null;
+						fileChooser.setCurrentDirectory(new File("."));
+						fileChooser.setSelectedFile(new File(""));
+						throw new IOException("Unsupported File Type: " + tmpFileException);
+					}
 				}
 				catch(Exception e)
 				{
@@ -509,7 +535,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		}
 	}
 	
-	public void saveAsData()
+	public void saveData()
 	{
 		if(fileName == null)
 		{
@@ -560,7 +586,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		}
 	}
 	
-	public void saveData()
+	public void saveAsData()
 	{
 		int response = fileChooser.showDialog(this, "Save as...");
 		if( response == JFileChooser.APPROVE_OPTION)
@@ -609,12 +635,24 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	{
 		int[] index = table.getSelectedRows();
 		
+		
+		
 		int response = JOptionPane.showConfirmDialog (null, "Delete the selected item(s)?","Confirm",JOptionPane.OK_CANCEL_OPTION);
 
 		if(response == JOptionPane.OK_OPTION)
+			
 		{
+			int[] sortedIndex = new int[index.length];
+			
+			for(int i=0;i<index.length;i++)
+			{
+				sortedIndex[i] = table.convertRowIndexToModel(index[i]);
+			}
+			
+			Arrays.sort(sortedIndex);
+		
 			for(int i=index.length - 1; i >= 0;i--)
-				ctm.customListModel.remove(table.convertRowIndexToModel(index[i]));
+				ctm.customListModel.remove(sortedIndex[i]);
 
 			hasChanges = true;
 			ctm.fireTableDataChanged();
@@ -633,7 +671,7 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		{
 			ctm.customListModel.clear();
 			ctm.customListModel.trimToSize();
-			hasChanges = true;
+			hasChanges = false;
 			ctm.fireTableDataChanged();
 		}
 		else
@@ -648,33 +686,57 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 		
 		WorkOrder tmp = (WorkOrder) ctm.customListModel.get(index);
 		
+		Date today = Calendar.getInstance().getTime();
+		
+		DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
+		
 		if(tmp.dateOut.equals(""))
 		{
-			DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
+			//DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
 			
-			Date date = Calendar.getInstance().getTime();
+			//Date date = Calendar.getInstance().getTime();
 			
-			tmp.dateOut = df3.format(date);
+			tmp.dateOut = df3.format(today);
 			hasChanges = true;
 			ctm.fireTableDataChanged();
 		}
 		else
 		{
-			int response = JOptionPane.showConfirmDialog (null, "Change completed date to today?","Confirm",JOptionPane.OK_CANCEL_OPTION);
-
-			if(response == JOptionPane.OK_OPTION)
+			
+			Date tdateIn = null;
+			
+			try
 			{
-				DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
-				
-				Date date = Calendar.getInstance().getTime();
-				
-				tmp.dateOut = df3.format(date);
-				hasChanges = true;
-				ctm.fireTableDataChanged();
+				tdateIn = df3.parse(tmp.dateIn);
+			}
+			catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			//sdf.parse(((JTextField)dateInField).getText().trim());
+			
+			if(today.before(tdateIn))
+			{
+				JOptionPane.showMessageDialog(null, "Completed date cannot be before requested date.", "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 			else
 			{
+				int response = JOptionPane.showConfirmDialog (null, "Change completed date to today?","Confirm",JOptionPane.OK_CANCEL_OPTION);
+
+				if(response == JOptionPane.OK_OPTION)
+				{
+					//DateFormat df3 = new SimpleDateFormat("MM-dd-yyyy");
+				
+					//Date date = Calendar.getInstance().getTime();
+				
+					tmp.dateOut = df3.format(today);
+					hasChanges = true;
+					ctm.fireTableDataChanged();
+				}
+				else
+				{
 			
+				}
 			}
 		}
 	}
@@ -757,9 +819,3 @@ public class MainFrame extends JFrame implements ActionListener, ListSelectionLi
 	@Override
 	public void mouseReleased(MouseEvent event){}
 }
-
-
-
-
-
-

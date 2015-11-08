@@ -20,13 +20,13 @@ public class RateVerifier extends InputVerifier
 		{
 			try
 			{
-				DecimalFormat decim = new DecimalFormat("0.00");
+				DecimalFormat formatter = new DecimalFormat("0.00");
 				Double tmp1 = Double.parseDouble(((JTextField)input).getText().trim().replaceAll(",",""));
 				if(tmp1 < 0 || tmp1 > 500  )
 					throw new NumberFormatException();
 				else
 				{
-					String tmp2 = decim.format(tmp1);
+					String tmp2 = formatter.format(tmp1);
 					((JTextField)input).setText(tmp2);
 				}
 			}

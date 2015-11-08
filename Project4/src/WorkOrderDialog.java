@@ -90,6 +90,7 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		cancelBtn = new JButton("Cancel");
 		cancelBtn.setActionCommand("CANCEL");
 		cancelBtn.addActionListener(this);
+		cancelBtn.setVerifyInputWhenFocusTarget(false);
 		
 		saveCloseBtn = new JButton("Save");
 		saveCloseBtn.setActionCommand("SAVECLOSE");
@@ -200,32 +201,16 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 		
 		layout.setVerticalGroup(vGroup);
 
-		Vector<Component> orderAdd = new Vector<Component>(9);
-		orderAdd.add(nameField);
-		orderAdd.add(deptCombobox);
-		orderAdd.add(dateInField);
-		orderAdd.add(dateOutField);
-		orderAdd.add(descField);
-		orderAdd.add(rateField);
-		orderAdd.add(saveAddBtn);
-		orderAdd.add(saveCloseBtn);
-		orderAdd.add(cancelBtn);
-	    
-	    Vector<Component> orderEdit = new Vector<Component>(8);
-	    orderEdit.add(nameField);
-	    orderEdit.add(deptCombobox);
-	    orderEdit.add(dateInField);
-	    orderEdit.add(dateOutField);
-	    orderEdit.add(descField);
-	    orderEdit.add(rateField);
-	    orderEdit.add(saveCloseBtn);
-	    orderEdit.add(cancelBtn);
-	    
-	    if(type==1)
-	    	newPolicy = new FocusPolicy(orderAdd);
-	    else
-	    	newPolicy = new FocusPolicy(orderEdit);
-	    
+		Vector<Component> order = new Vector<Component>(6);
+		order.add(nameField);
+		order.add(deptCombobox);
+		order.add(dateInField);
+		order.add(dateOutField);
+		order.add(descField);
+		order.add(rateField);
+
+    	newPolicy = new FocusPolicy(order);
+    	getRootPane().setDefaultButton(saveAddBtn);
 	    
 	    this.setFocusTraversalPolicy(newPolicy);
 		
@@ -266,12 +251,11 @@ public class WorkOrderDialog extends JDialog implements ActionListener
 					SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
 		            Date dateIn = sdf.parse(((JTextField)dateInField).getText().trim());
 		            Date dateOut = sdf.parse(((JTextField)dateOutField).getText().trim());
-		            
+
 		            if(dateIn.after(dateOut))
 		            {
 		            	dCheck = false;
 						JOptionPane.showMessageDialog(null, "Date ordered cannot be after date filled.", "Error!", JOptionPane.ERROR_MESSAGE);
-						
 		            }
 		            else
 		            {

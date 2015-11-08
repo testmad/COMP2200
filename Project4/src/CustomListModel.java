@@ -50,7 +50,7 @@ public class CustomListModel extends DefaultListModel implements DataManager
 			
 			for(int i = 0; i < numOrders; i++)
 			{
-				this.addElement(WorkOrder.loadOrder(dis));
+				this.addElement(new WorkOrder(dis));
 			}
 		}
 		catch (IOException e)
@@ -69,7 +69,7 @@ public class CustomListModel extends DefaultListModel implements DataManager
 			
 			for(int i = 0; i < this.getSize(); i++)
 			{
-				WorkOrder.saveOrder(dos, (WorkOrder)this.get(i));
+				((WorkOrder) this.get(i)).saveOrder(dos);
 			}
 		}
 		catch (IOException e)
@@ -87,7 +87,7 @@ public class CustomListModel extends DefaultListModel implements DataManager
 			
 			for(int i = 0; i < numItems; i++)
 			{
-				WorkOrder.saveOrder(dos, WorkOrder.debug() );
+				WorkOrder.saveOrderDebug(dos, WorkOrder.debug() );
 			}
 		}
 		catch (IOException e)

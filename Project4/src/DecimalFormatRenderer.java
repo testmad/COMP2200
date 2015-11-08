@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 @SuppressWarnings("serial")
 public class DecimalFormatRenderer extends DefaultTableCellRenderer
 {
-	private static final DecimalFormat formatter = new DecimalFormat( "#.00" );
+	private static final DecimalFormat formatter = new DecimalFormat( "0.00" );
 	
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 	{
