@@ -1,27 +1,12 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.awt.print.*;
+import java.io.*;
 
 import javax.imageio.ImageIO;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.*;
+import javax.swing.filechooser.*;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame implements ActionListener
@@ -61,9 +46,6 @@ public class MainFrame extends JFrame implements ActionListener
 		imagePanel = new ImagePanel();
 		buttonPanel = new JPanel();
 		
-		//imagePanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-		//imagePanel.setBackground(Color.white);
-		
 		buttonLoad = new JButton("Load");
 		buttonLoad.addActionListener(this);
 		buttonLoad.setActionCommand("LOAD");
@@ -77,7 +59,6 @@ public class MainFrame extends JFrame implements ActionListener
 		
 		cp.add(imagePanel, BorderLayout.CENTER);
 		cp.add(buttonPanel, BorderLayout.SOUTH);
-		
 	}
 
 	void setupMainFrame()
@@ -88,7 +69,6 @@ public class MainFrame extends JFrame implements ActionListener
 		setTitle("ImageViewer");
 		setSize(new Dimension(tk.getScreenSize().width/2,tk.getScreenSize().height/2));
 		setLocationRelativeTo(null);
-		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 	}
@@ -108,7 +88,7 @@ public class MainFrame extends JFrame implements ActionListener
 			}
 			catch(PrinterException e)
 			{
-				System.out.println("Error printing...");
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 			
 		}
@@ -128,7 +108,6 @@ public class MainFrame extends JFrame implements ActionListener
 			System.out.println("Ready to print...");
 			pj.print();
 		}
-		
 	}
 
 	public void loadImage()
@@ -149,12 +128,12 @@ public class MainFrame extends JFrame implements ActionListener
 				}
 				catch(IOException e)
 				{
-					JOptionPane.showMessageDialog(null, e.getMessage(), "Error1!", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 			catch(Exception e)
 			{
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Error2!", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		else
@@ -162,8 +141,5 @@ public class MainFrame extends JFrame implements ActionListener
 			fileName = null;
 			System.out.println("Cancelled by user.");
 		}
-		
 	}
-	
-	
 }
