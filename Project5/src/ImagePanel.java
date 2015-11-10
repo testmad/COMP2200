@@ -143,6 +143,8 @@ public class ImagePanel extends JPanel implements Printable
 					imageSize.height,
 					this);
 		
+		g.setXORMode(Color.white);
+		
 		Font font = g2.getFont().deriveFont( 6 );
 		g2.setFont(font);
 		int fileNameWidth = g2.getFontMetrics(font).stringWidth(fileName);
