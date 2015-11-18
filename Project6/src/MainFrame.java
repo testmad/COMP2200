@@ -22,7 +22,7 @@ import javax.swing.event.ChangeListener;
 
 public class MainFrame extends JFrame implements ActionListener, ChangeListener
 {
-	JPanel drawingPanel;
+	DrawPanel drawingPanel;
 	JPanel buttonPanel;
 	
 	JButton buttonAddOne;
@@ -49,8 +49,8 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		Container cp;
 		cp = getContentPane();
 		
-		drawingPanel = new JPanel();
-		drawingPanel.setBackground(Color.white);
+		drawingPanel = new DrawPanel();
+		//drawingPanel.setBackground(Color.white);
 		
 		buttonPanel = new JPanel();
 		
