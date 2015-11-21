@@ -30,9 +30,9 @@ public class Star
 	
 	Graphics2D g;
 
-	public Star(Graphics2D g2)
+	public Star()
 	{
-		g = g2;
+		//g = g2;
 		
 		posX = 100;
 		posY = 100;
@@ -47,7 +47,7 @@ public class Star
 		color = new Color(2, 132, 130, 255);
 	}
 	
-	void draw(Graphics2D g )
+	void draw(Graphics2D g)
 	{
 		int[] x = null;
 		int[] y = null;

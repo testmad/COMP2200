@@ -156,7 +156,10 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		
+		if(e.getActionCommand().equals("ONE"))
+		{
+			drawingPanel.addStars(3);
+		}
 	}
 
 	@Override
