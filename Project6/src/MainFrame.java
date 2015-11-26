@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,13 +12,14 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+@SuppressWarnings("serial")
 public class MainFrame extends JFrame implements ActionListener, ChangeListener
 {
 	DrawPanel drawingPanel;
@@ -28,12 +28,16 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 	JButton buttonAddOne;
 	JButton buttonAddMany;
 	JButton buttonClear;
+	JButton buttonChase;
 	JButton buttonFall;
 	JButton buttonRandom;
 	JButton buttonPause;
 	
 	JSlider lifeSlider;
 	JSlider timeSlider;
+	
+	Timer timer;
+	private boolean isPaused;
 	
 	public MainFrame()
 	{
@@ -42,6 +46,12 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		pack();
 		
 		setupMainFrame();
+
+		
+		timer = new Timer(1000/240, this);
+		timer.setActionCommand("UPDATE");
+		timer.setCoalesce(true);
+	    timer.start();
 	}
 
 	private void buildGUI()
@@ -50,7 +60,6 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		cp = getContentPane();
 		
 		drawingPanel = new DrawPanel();
-		//drawingPanel.setBackground(Color.white);
 		
 		buttonPanel = new JPanel();
 		
@@ -90,7 +99,17 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 		
-		buttonFall = new JButton("Fall Mode");
+		buttonChase = new JButton("Chase");
+		buttonChase.setMinimumSize(new Dimension(100,25));
+		buttonChase.setMaximumSize(new Dimension(100,25));
+		buttonChase.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buttonChase.setActionCommand("CHASE");
+		buttonChase.addActionListener(this);
+		buttonPanel.add(buttonChase);
+		
+		buttonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+		
+		buttonFall = new JButton("Fall");
 		buttonFall.setMinimumSize(new Dimension(100,25));
 		buttonFall.setMaximumSize(new Dimension(100,25));
 		buttonFall.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -100,7 +119,7 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 		
-		buttonRandom = new JButton("Random Mode");
+		buttonRandom = new JButton("Random");
 		buttonRandom.setMinimumSize(new Dimension(100,25));
 		buttonRandom.setMaximumSize(new Dimension(100,25));
 		buttonRandom.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -120,8 +139,12 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 		
-		lifeSlider = new JSlider(0,100,50);
-		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Star Life"));
+		lifeSlider = new JSlider(0,120,60);
+		lifeSlider.setPaintTicks(true);
+		lifeSlider.setPaintLabels(true);
+		lifeSlider.setMajorTickSpacing(30);
+		lifeSlider.setMinorTickSpacing(15);
+		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Life in Seconds"));
 		((TitledBorder) lifeSlider.getBorder()).setTitleJustification(TitledBorder.CENTER);
 		lifeSlider.setPreferredSize(new Dimension(100,25));
 		lifeSlider.addChangeListener(this);
@@ -129,7 +152,12 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		buttonPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 		
-		timeSlider = new JSlider(0,100,50);
+		timeSlider = new JSlider(0,200,100);
+		timeSlider.setPaintTicks(true);
+		timeSlider.setPaintLabels(true);
+		timeSlider.setSnapToTicks(true);
+		timeSlider.setMajorTickSpacing(100);
+		timeSlider.setMinorTickSpacing(10);
 		timeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Demo Speed"));
 		((TitledBorder) timeSlider.getBorder()).setTitleJustification(TitledBorder.CENTER);
 		timeSlider.setPreferredSize(new Dimension(100,25));
@@ -158,14 +186,77 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 	{
 		if(e.getActionCommand().equals("ONE"))
 		{
-			drawingPanel.addStars(3);
+			drawingPanel.addStar();
+		}
+		
+		if(e.getActionCommand().equals("MANY"))
+		{
+			drawingPanel.addStars();
+		}
+		
+		if(e.getActionCommand().equals("CLEAR"))
+		{
+			drawingPanel.clearStars();
+		}
+		
+		if(e.getActionCommand().equals("CHASE"))
+		{
+			drawingPanel.setMode("CHASE");
+		}
+		
+		if(e.getActionCommand().equals("FALL"))
+		{
+			drawingPanel.setMode("FALL");
+		}
+		
+		if(e.getActionCommand().equals("RANDOM"))
+		{
+			drawingPanel.setMode("RANDOM");
+		}
+		
+		if(e.getActionCommand().equals("PAUSE"))
+		{
+			if(isPaused)
+			{
+				isPaused = false;
+				buttonPause.setText("Pause");
+				drawingPanel.setTimeScale(timeSlider.getValue());
+			}
+			else
+			{
+				isPaused = true;
+				buttonPause.setText("Unpause");
+				drawingPanel.setTimeScale(0);
+			}
+			
+		}
+		
+		if(e.getActionCommand().equals("UPDATE"))
+		{
+			drawingPanel.update();
 		}
 	}
 
 	@Override
-	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
+	public void stateChanged(ChangeEvent e)
+	{
+		if(e.getSource().equals(lifeSlider))
+			drawingPanel.setStarLife(lifeSlider.getValue());
 		
+		if(e.getSource().equals(timeSlider))
+		{
+			if(timeSlider.getValue() == 0)
+			{
+				buttonPause.setText("Unpause");
+				isPaused = true;
+			}
+			else
+			{
+				buttonPause.setText("Pause");
+				isPaused = false;
+			}
+			
+			drawingPanel.setTimeScale(timeSlider.getValue());
+		}
 	}
-
 }
