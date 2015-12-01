@@ -24,8 +24,8 @@ public class Star
 	int innerRadius;
 	int outerRadius;
 	
-	long starLife;
-	float currentLife;
+	double starLife;
+	double currentLife;
 	
 	Color color;
 	
@@ -40,8 +40,8 @@ public class Star
 	double target_x;
 	double target_y;
 	
-	double speed_x = 1;
-	double speed_y = 1;
+	double speed_x = 1.0;
+	double speed_y = 1.0;
 	
 	Random r = new Random();
 	
@@ -54,9 +54,10 @@ public class Star
 	String mode;
 	private boolean hasSpeed;
 	
+	double elapsedT;
+	double lastUpdate;
 
-
-	public Star(int boundsWidth, int boundsHeight, int starLife)
+	public Star(int boundsWidth, int boundsHeight, double starLife)
 	{
 		this.boundsWidth = boundsWidth;
 		this.boundsHeight = boundsHeight;
@@ -78,11 +79,14 @@ public class Star
 		
 		color = new Color(red, green, blue, alpha);
 		
-		this.starLife = starLife * 300 ;
+		this.starLife = starLife * 1000;
 		currentLife = this.starLife;
 		
 		target_x = x;
 		target_y = y;
+		
+		
+		lastUpdate = System.nanoTime();
 	}
 	
 	void draw(Graphics2D g)
@@ -92,7 +96,7 @@ public class Star
 		
 		xPoints = new int[2*branches + 1];
 		yPoints = new int[2*branches + 1];
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		//g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		g.setColor(color);
 		
@@ -115,11 +119,13 @@ public class Star
 
 	public void update(double timeScale)
 	{
+		elapsedT = (System.nanoTime() - lastUpdate)/1000000 * timeScale; 
+		
 		if(currentLife <= 0)
 			hasDied = true;
 		else
 		{
-			alpha = currentLife/starLife;
+			alpha = (float) (currentLife/starLife);
 			color = new Color(red, green, blue, alpha);
 
             if(mode.equals("CHASE"))
@@ -129,8 +135,8 @@ public class Star
             	delta_x = target_x - x;
     	        delta_y = target_y - y;
                 
-    	        speed_x = delta_x/50;
-    	        speed_y = delta_y/50;
+    	        speed_x = delta_x/500;
+    	        speed_y = delta_y/500;
 
 	            if (x - outerRadius < 0)
 	            {
@@ -154,8 +160,10 @@ public class Star
             		y = boundsHeight - outerRadius;
 	            }
 
-				x += speed_x * timeScale;
-	            y += speed_y * timeScale;
+				x += speed_x * elapsedT;
+	            y += speed_y * elapsedT;
+	            
+	            System.out.println(speed_x);
 	            
 	            double distance = Math.sqrt(Math.pow(x- target_x,2) + Math.pow(y- target_y,2));
 	            
@@ -176,8 +184,8 @@ public class Star
     	        speed_y += .05;
     	        
     	        
-            	x += speed_x * timeScale;
-	            y += speed_y * timeScale;
+            	x += speed_x * elapsedT;
+	            y += speed_y * elapsedT;
 	            
 	            if (x - outerRadius < 0)
 	            {
@@ -209,15 +217,15 @@ public class Star
 					delta_x = r.nextInt(boundsWidth) - x;
 	    	        delta_y = r.nextInt(boundsHeight) - y;
 	                
-	    	        speed_x = delta_x/(r.nextInt(400)+200);
-	    	        speed_y = delta_y/(r.nextInt(400)+200);
+	    	        speed_x = delta_x/(r.nextInt(500)+250);
+	    	        speed_y = delta_y/(r.nextInt(500)+250);
 	    	        hasSpeed = true;
 				}
 
 	            if(hasSpeed)
 	            {
-	            	x += speed_x * timeScale;
-		            y += speed_y * timeScale;
+	            	x += speed_x * elapsedT;
+		            y += speed_y * elapsedT;
 		            
 		            if (x - outerRadius < 0)
 		            {
@@ -242,8 +250,11 @@ public class Star
 		            }
 	            }
 			}
-            currentLife -= 1 * timeScale;
+            currentLife -= 1 * elapsedT;
 		}
+		System.out.println("currentLife: " + currentLife + ", starLife: " + starLife);
+		lastUpdate = System.nanoTime();
+		
 	}
 	
 	void setTarget(double x, double y)

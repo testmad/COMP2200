@@ -47,8 +47,7 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		setupMainFrame();
 
-		
-		timer = new Timer(1000/240, this);
+		timer = new Timer(1000/60, this);
 		timer.setActionCommand("UPDATE");
 		timer.setCoalesce(true);
 	    timer.start();
@@ -141,12 +140,12 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		lifeSlider = new JSlider(0,120,60);
 		lifeSlider.setPaintTicks(true);
-		lifeSlider.setPaintLabels(true);
+		//lifeSlider.setPaintLabels(true);
 		lifeSlider.setMajorTickSpacing(30);
 		lifeSlider.setMinorTickSpacing(15);
-		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Life in Seconds"));
+		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Star Life"));
 		((TitledBorder) lifeSlider.getBorder()).setTitleJustification(TitledBorder.CENTER);
-		lifeSlider.setPreferredSize(new Dimension(100,25));
+		//lifeSlider.setPreferredSize(new Dimension(100,25));
 		lifeSlider.addChangeListener(this);
 		buttonPanel.add(lifeSlider);
 		
@@ -154,13 +153,13 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		timeSlider = new JSlider(0,200,100);
 		timeSlider.setPaintTicks(true);
-		timeSlider.setPaintLabels(true);
+		//timeSlider.setPaintLabels(true);
 		timeSlider.setSnapToTicks(true);
 		timeSlider.setMajorTickSpacing(100);
 		timeSlider.setMinorTickSpacing(10);
 		timeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Demo Speed"));
 		((TitledBorder) timeSlider.getBorder()).setTitleJustification(TitledBorder.CENTER);
-		timeSlider.setPreferredSize(new Dimension(100,25));
+		//timeSlider.setPreferredSize(new Dimension(100,25));
 		timeSlider.addChangeListener(this);
 		buttonPanel.add(timeSlider);
 		

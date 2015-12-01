@@ -14,8 +14,8 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	ArrayList<Star> stars;
 	
 	double lastUpdateTime;
-	int starLife = 15;
-	double timeScale = 1;
+	double starLife = 60;
+	double timeScale = 1.0;
 	
 	boolean mouseIsDown = false;
 	
@@ -108,11 +108,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	void setStarLife(int starLife)
 	{
 		this.starLife = starLife;
+		System.out.println(this.starLife);
 	}
 	
 	void setTimeScale(int timeScale)
 	{
+		
 		this.timeScale = (double)(timeScale)/100;
+		System.out.println(this.timeScale);
 	}
 	
 	void setMode(String mode)
