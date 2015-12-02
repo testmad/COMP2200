@@ -96,7 +96,7 @@ public class Star
 		
 		xPoints = new int[2*branches + 1];
 		yPoints = new int[2*branches + 1];
-		//g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		g.setColor(color);
 		
@@ -119,7 +119,7 @@ public class Star
 
 	public void update(double timeScale)
 	{
-		elapsedT = (System.nanoTime() - lastUpdate)/1000000 * timeScale; 
+		elapsedT = /*(System.nanoTime() - lastUpdate)/1000000 **/ timeScale; 
 		
 		if(currentLife <= 0)
 			hasDied = true;
@@ -135,8 +135,8 @@ public class Star
             	delta_x = target_x - x;
     	        delta_y = target_y - y;
                 
-    	        speed_x = delta_x/500;
-    	        speed_y = delta_y/500;
+    	        speed_x = delta_x/50;//0;
+    	        speed_y = delta_y/50;//0;
 
 	            if (x - outerRadius < 0)
 	            {
@@ -163,7 +163,7 @@ public class Star
 				x += speed_x * elapsedT;
 	            y += speed_y * elapsedT;
 	            
-	            System.out.println(speed_x);
+	            //System.out.println(speed_x);
 	            
 	            double distance = Math.sqrt(Math.pow(x- target_x,2) + Math.pow(y- target_y,2));
 	            
@@ -252,7 +252,7 @@ public class Star
 			}
             currentLife -= 1 * elapsedT;
 		}
-		System.out.println("currentLife: " + currentLife + ", starLife: " + starLife);
+		//System.out.println("currentLife: " + currentLife + ", starLife: " + starLife);
 		lastUpdate = System.nanoTime();
 		
 	}

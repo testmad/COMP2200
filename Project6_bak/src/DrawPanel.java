@@ -1,9 +1,5 @@
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 
@@ -12,18 +8,17 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 {		
 	Star star;
 	ArrayList<Star> stars;
-	
-	double lastUpdateTime;
-	int starLife = 15;
+
+	int starLife = 60;
 	double timeScale = 1;
 	
 	boolean mouseIsDown = false;
 	
 	double mouse_x = 0;
 	double mouse_y = 0;
-	private String mode;
-	private long lastMillis;
 	
+	String mode;
+	long lastMillis;
 	
 	public DrawPanel()
 	{	
@@ -33,8 +28,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		addMouseMotionListener(this);
 		
 		setMode("CHASE");
-		
-		lastUpdateTime = System.nanoTime();
 	}
 	
 	@Override
@@ -83,7 +76,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 			//paused
 		}
-		else //if(now - lastUpdateTime >= (1000000000 / 60))
+		else
 		{
 			if(!stars.isEmpty())
 			{
@@ -103,7 +96,6 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 						stars.remove(i);
 				}
 			}
-			lastUpdateTime = System.nanoTime();
 		}
 		repaint();
 	}

@@ -1,23 +1,9 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.Timer;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame implements ActionListener, ChangeListener
@@ -37,21 +23,17 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 	JSlider timeSlider;
 	
 	Timer timer;
-	private boolean isPaused;
+	boolean isPaused;
 	
 	public MainFrame()
 	{
 		buildGUI();
-		
 		pack();
-		
 		setupMainFrame();
-
 		
 		timer = new Timer(1000/60, this);
-		//timer.setRepeats(true);
 		timer.setActionCommand("UPDATE");
-		//timer.setCoalesce(true);
+		timer.setCoalesce(true);
 	    timer.start();
 	}
 
@@ -142,10 +124,10 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		lifeSlider = new JSlider(0,120,60);
 		lifeSlider.setPaintTicks(true);
-		//lifeSlider.setPaintLabels(true);
+		lifeSlider.setSnapToTicks(true);
 		lifeSlider.setMajorTickSpacing(30);
 		lifeSlider.setMinorTickSpacing(15);
-		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Life in Seconds"));
+		lifeSlider.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Star Life"));
 		((TitledBorder) lifeSlider.getBorder()).setTitleJustification(TitledBorder.CENTER);
 		lifeSlider.setPreferredSize(new Dimension(100,25));
 		lifeSlider.addChangeListener(this);
@@ -155,7 +137,6 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		
 		timeSlider = new JSlider(0,200,100);
 		timeSlider.setPaintTicks(true);
-		//timeSlider.setPaintLabels(true);
 		timeSlider.setSnapToTicks(true);
 		timeSlider.setMajorTickSpacing(100);
 		timeSlider.setMinorTickSpacing(10);
@@ -177,7 +158,6 @@ public class MainFrame extends JFrame implements ActionListener, ChangeListener
 		setTitle("Star Demo");
 		setSize(new Dimension(tk.getScreenSize().width/2,tk.getScreenSize().height/2));
 		setLocationRelativeTo(null);
-		//setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 	}

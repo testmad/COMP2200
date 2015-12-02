@@ -1,6 +1,4 @@
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.util.Random;
 
 public class Star
@@ -52,9 +50,7 @@ public class Star
 	double target_origin_x;
 	double target_origin_y;
 	String mode;
-	private boolean hasSpeed;
-	
-
+	boolean hasSpeed;
 
 	public Star(int boundsWidth, int boundsHeight, int starLife)
 	{
@@ -78,7 +74,7 @@ public class Star
 		
 		color = new Color(red, green, blue, alpha);
 		
-		this.starLife = starLife * 300 ;
+		this.starLife = starLife * 1000 ;
 		currentLife = this.starLife;
 		
 		target_x = x;

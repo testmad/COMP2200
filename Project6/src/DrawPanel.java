@@ -80,7 +80,7 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 		{
 			//paused
 		}
-		else if(now - lastUpdateTime >= (1000 / 30))
+		else //if(now - lastUpdateTime >= (1000 / 30))
 		{
 			if(!stars.isEmpty())
 			{
@@ -108,14 +108,14 @@ public class DrawPanel extends JPanel implements MouseListener, MouseMotionListe
 	void setStarLife(int starLife)
 	{
 		this.starLife = starLife;
-		System.out.println(this.starLife);
+		//System.out.println(this.starLife);
 	}
 	
 	void setTimeScale(int timeScale)
 	{
 		
 		this.timeScale = (double)(timeScale)/100;
-		System.out.println(this.timeScale);
+		//System.out.println(this.timeScale);
 	}
 	
 	void setMode(String mode)
